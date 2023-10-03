@@ -4,4 +4,6 @@ ENV MICROROS_LIBRARY_FOLDER extras
 
 RUN git clone https://github.com/micro-ROS/micro_ros_arduino.git /project
 
-#ENTRYPOINT ["ls", "/project"]
+RUN echo "" >> /entrypoint.sh
+RUN echo "mkdir -p /ws/lib" >> /entrypoint.sh
+RUN echo "mv /uros_ws/firmware/build/libmicroros.a /ws/lib" >> /entrypoint.sh
