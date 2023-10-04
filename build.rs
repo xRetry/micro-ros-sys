@@ -34,24 +34,26 @@ fn main() {
 
         let mut cmd = std::process::Command::new("docker");
         cmd.arg("cp")
-            .arg("microros-build:/uros_ws/firmware/build/libmicroros.a")
-            .arg("lib/libmicroros.a");
+            .arg("microros-build:/uros_ws/firmware/build")
+            .arg("lib");
 
         if !cmd.output().unwrap().status.success() {
             panic!("Could not copy libmicroros");
         }
     }
 
-    let libdir_path = Path::new("lib");
-    let headers_path = libdir_path.join("wrapper.h");
+    //let libdir_path = Path::new("lib");
+    let headers_path = Path::new("wrapper.h");
     let headers_path_str = headers_path.to_str().expect("Path is not a valid string");
     //let lib_path = libdir_path.join("libmicroros.a");
 
+    println!("cargo:rustc-link-search=native=lib/include");
     println!("cargo:rustc-link-lib=static=lib/libmicroros");
     println!("cargo:rerun-if-changed={}", headers_path_str);
 
     let bindings = bindgen::Builder::default()
         .header(headers_path_str)
+        .clang_arg("-I/lib/include")
         .parse_callbacks(Box::new(CargoCallbacks))
         .generate()
         .expect("Unable to generate bindings");
